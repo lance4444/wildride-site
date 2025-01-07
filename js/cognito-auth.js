@@ -59,7 +59,13 @@ var WildRydes = window.WildRydes || {};
         };
         var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 
-        userPool.signUp(email.toLowerCase(), password, [attributeEmail], null,
+        var dataName = {
+            Name: 'name.formatted',
+            Value: email.split('@')[0]  // 使用邮箱@前面的部分作为名字
+        };
+        var attributeName = new AmazonCognitoIdentity.CognitoUserAttribute(dataName);
+
+        userPool.signUp(toUsername(email), password, [attributeEmail, attributeName], null,
             function signUpCallback(err, result) {
                 if (!err) {
                     onSuccess(result);
@@ -72,11 +78,11 @@ var WildRydes = window.WildRydes || {};
 
     function signin(email, password, onSuccess, onFailure) {
         var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-            Username: email.toLowerCase(),
+            Username: toUsername(email),
             Password: password
         });
 
-        var cognitoUser = createCognitoUser(email.toLowerCase());
+        var cognitoUser = createCognitoUser(email);
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: onSuccess,
             onFailure: onFailure
@@ -84,7 +90,7 @@ var WildRydes = window.WildRydes || {};
     }
 
     function verify(email, code, onSuccess, onFailure) {
-        createCognitoUser(email.toLowerCase()).confirmRegistration(code, true, function confirmCallback(err, result) {
+        createCognitoUser(email).confirmRegistration(code, true, function confirmCallback(err, result) {
             if (!err) {
                 onSuccess(result);
             } else {
@@ -95,7 +101,7 @@ var WildRydes = window.WildRydes || {};
 
     function createCognitoUser(email) {
         return new AmazonCognitoIdentity.CognitoUser({
-            Username: email.toLowerCase(),
+            Username: toUsername(email),
             Pool: userPool
         });
     }
