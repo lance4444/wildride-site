@@ -59,13 +59,7 @@ var WildRydes = window.WildRydes || {};
         };
         var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 
-        var dataName = {
-            Name: 'name.formatted',
-            Value: email.split('@')[0]  // 使用邮箱@前面的部分作为名字
-        };
-        var attributeName = new AmazonCognitoIdentity.CognitoUserAttribute(dataName);
-
-        userPool.signUp(toUsername(email), password, [attributeEmail, attributeName], null,
+        userPool.signUp(toUsername(email), password, [attributeEmail], null,
             function signUpCallback(err, result) {
                 if (!err) {
                     onSuccess(result);
@@ -107,7 +101,7 @@ var WildRydes = window.WildRydes || {};
     }
 
     function toUsername(email) {
-         return email.replace('@', '-at-');
+        return email.replace('@', '-at-');
     }
 
     /*
