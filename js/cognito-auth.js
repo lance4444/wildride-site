@@ -59,7 +59,13 @@ var WildRydes = window.WildRydes || {};
         };
         var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 
-        userPool.signUp(toUsername(email), password, [attributeEmail], null,
+         var dataName = {
+            Name: 'name',
+            Value: email.split('@')[0]  // Using the part before @ as the name
+        };
+        var attributeName = new AmazonCognitoIdentity.CognitoUserAttribute(dataName);
+
+        userPool.signUp(toUsername(email), password, [attributeEmail, attributeName], null,
             function signUpCallback(err, result) {
                 if (!err) {
                     onSuccess(result);
